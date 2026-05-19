@@ -89,6 +89,9 @@ _Generated on May 19, 2026_
 ## Quick API Example
 Request an authenticated endpoint (replace `<TOKEN>`):
 
+## 
+API-Docs - http://localhost:8000/api-docs/#
+
 ```bash
 curl -H "Authorization: Bearer <TOKEN>" http://localhost:8000/leads/get-leads
 ```
