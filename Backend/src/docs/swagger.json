@@ -1,0 +1,385 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "CRM API",
+    "version": "1.0.0",
+    "description": "User & Lead Management API in Express + TypeScript"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+
+
+    "/users/register": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Register a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "role": {
+                    "type": "string",
+                    "enum": ["admin", "user"]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["active", "inactive"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          }
+        }
+      }
+    },
+
+    "/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Login user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          }
+        }
+      }
+    },
+
+    "/users/current-user/{userId}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get current user by ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User fetched successfully"
+          }
+        }
+      }
+    },
+
+    "/users/all-users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users (admin only)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of users"
+          }
+        }
+      }
+    },
+
+    "/users/update-user/{userId}": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "password": { "type": "string" },
+                  "role": {
+                    "type": "string",
+                    "enum": ["admin", "user"]
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["active", "inactive"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          }
+        }
+      }
+    },
+
+    "/users/delete-user/{userId}": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          }
+        }
+      }
+    },
+
+    "/users/reset-password": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Reset password using email",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset request processed"
+          }
+        }
+      }
+    },
+
+   
+
+    "/leads/create": {
+      "post": {
+        "tags": ["Leads"],
+        "summary": "Create a new lead",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "source"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "status": {
+                    "type": "string",
+                    "enum": ["new", "contacted", "qualified", "lost"]
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": ["website", "instagram", "referral"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Lead created successfully"
+          }
+        }
+      }
+    },
+
+    "/leads/get-leads": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "Get all leads with pagination, filters, search and sort",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "number" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["new", "contacted", "qualified", "lost"]
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["website", "instagram", "referral"]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["latest", "oldest"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Leads fetched successfully"
+          }
+        }
+      }
+    },
+
+    "/leads/{leadId}": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "Get single lead",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "leadId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lead fetched successfully"
+          }
+        }
+      },
+
+      "put": {
+        "tags": ["Leads"],
+        "summary": "Update lead",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "leadId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "status": {
+                    "type": "string",
+                    "enum": ["new", "contacted", "qualified", "lost"]
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": ["website", "instagram", "referral"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lead updated successfully"
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Leads"],
+        "summary": "Delete lead",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "leadId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lead deleted successfully"
+          }
+        }
+      }
+    }
+  }
+}
